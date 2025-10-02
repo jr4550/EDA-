@@ -54,8 +54,6 @@ weather_df %>%
 
 ```{r}
 weather_df %>% 
-  group_by(name)
-  # or
  group_by(name, month)
 ```
 
@@ -130,7 +128,7 @@ weather_df %>%
     names_from = name, 
     values_from = mean_tmax
   ) %>% 
-  knitr::kable()
+  knitr::kable(digits = 2)
 
 ```
 
