@@ -132,3 +132,65 @@ weather_df %>%
 
 ```
 
+## mutate with groups
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(
+  mean_tmax = mean(tmax, na.rm = TRUE),
+  center_tmax = tmax - mean_tmax
+  ) %>% 
+  ggplot(aes(x = date, y = center_tmax, color = name)) +
+  geom_point()
+  
+```
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  mutate(temp_rank = min_rank(tmax)) %>% 
+  filter(temp_rank < 2)
+```
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  mutate(temp_rank = min_rank(desc(tmax))) %>% 
+  filter(temp_rank < 2)
+```
+
+## what about lags?
+ORDER MATTTERS HERE 
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(lagged_tmax = lag(tmax))
+```
+use variables you create 
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(
+    temp_change = tmax - lag(tmax)
+  ) %>% 
+  summarize( 
+    sd_tmax_change = sd(temp_change, na.rm = TRUE),
+    tmax_change_max = max(temp_change, na.rm = TRUE)
+  )
+```
+FInd exact date that changed happen 
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(
+    temp_change = tmax - lag(tmax),
+    change_rank = min_rank(desc(temp_change))
+  ) %>% 
+  filter(
+    min_rank(desc(temp_change)) < 2 
+  )
+
+```
+
+```{r}
+
+```
+
