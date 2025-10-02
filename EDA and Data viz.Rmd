@@ -1,0 +1,136 @@
+---
+title: "EDA and Viz"
+output: github_document
+author: Jeff Remo
+date: "2025-10-02"
+---
+
+```{r}
+library(tidyverse)
+library(p8105.datasets)
+data("weather_df")
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+```{r}
+data("weather_df")
+
+weather_df =
+  weather_df %>% 
+  mutate(month = floor_date(date, unit = "month"))
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp)) + 
+  geom_histogram()
+```
+```{r}
+weather_df %>% 
+  filter(prcp > 1000)
+```
+look at data again 
+```{r}
+weather_df %>% 
+  filter(tmax >=20, tmax <=30) %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name, shape = name))
+  geom_point()
+```
+
+```{r}
+weather_df %>% 
+  group_by(name)
+  # or
+ group_by(name, month)
+```
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  summarize(
+    n = n ()
+  )
+```
+```{r}
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(
+    n = n ()
+  )
+```
+```{r}
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(
+    n = n_distinct(date)
+)
+
+```
+
+```{r}
+weather_df %>% 
+  count(name)
+```
+
+
+## interesting summaries 
+```{r}
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(
+    mean_tmax = mean(tmax)
+  )
+```
+
+```{r}
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE), 
+    median_tmin = median(tmin, na.rm = TRUE),  # Fixed: variable name on left
+    sd_prcp = sd(prcp, na.rm = TRUE)  # Fixed: removed space in na.rm
+  )
+```
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+  ) %>% 
+  ggplot(aes(x = month, y = mean_tmax, color = name)) +
+  geom_point()+
+  geom_line()
+    
+```
+
+format pretty grpahs 
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+  ) %>% 
+  pivot_wider(
+    names_from = name, 
+    values_from = mean_tmax
+  ) %>% 
+  knitr::kable()
+
+```
+
